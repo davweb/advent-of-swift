@@ -10,17 +10,17 @@ func readFile() -> [[Character]] {
 func lineVariations(_ x: Int, _ y: Int) -> [[(Int, Int)]] {
     (-1 ... 1).flatMap { dx in
         (-1 ... 1).filter { $0 != 0 || dx != 0 }.map { dy in
-            (1 ... 3).map { (x + dx * $0, y + dy * $0) }
+            (0 ... 3).map { (x + dx * $0, y + dy * $0) }
         }
     }
 }
 
 func crossVariations(_ x: Int, _ y: Int) -> [[(Int, Int)]] {
     [
-        [(x - 1, y - 1), (x + 1, y + 1), (x - 1, y + 1), (x + 1, y - 1)],
-        [(x - 1, y - 1), (x + 1, y + 1), (x + 1, y - 1), (x - 1, y + 1)],
-        [(x + 1, y - 1), (x - 1, y + 1), (x + 1, y + 1), (x - 1, y - 1)],
-        [(x - 1, y + 1), (x + 1, y - 1), (x + 1, y + 1), (x - 1, y - 1)],
+        [(x, y), (x - 1, y - 1), (x + 1, y + 1), (x - 1, y + 1), (x + 1, y - 1)],
+        [(x, y), (x - 1, y - 1), (x + 1, y + 1), (x + 1, y - 1), (x - 1, y + 1)],
+        [(x, y), (x + 1, y - 1), (x - 1, y + 1), (x + 1, y + 1), (x - 1, y - 1)],
+        [(x, y), (x - 1, y + 1), (x + 1, y - 1), (x + 1, y + 1), (x - 1, y - 1)],
     ]
 }
 
@@ -28,13 +28,9 @@ func search(haystack: [[Character]], needle: [Character], variations: (Int, Int)
     let xRange = 0 ..< haystack.count
     let yRange = 0 ..< haystack.first!.count
 
-    let startingLocations = haystack.indices.flatMap { x in
+    return haystack.indices.flatMap { x in
         haystack.first!.indices.map { y in (x, y) }
-    }.filter { x, y in
-        haystack[x][y] == needle[0]
-    }
-
-    return startingLocations.flatMap { x, y in
+    }.flatMap { x, y in
         variations(x, y)
     }.filter {
         $0.allSatisfy { x, y in
@@ -42,7 +38,7 @@ func search(haystack: [[Character]], needle: [Character], variations: (Int, Int)
         }
     }.filter {
         $0.enumerated().allSatisfy { index, location in
-            haystack[location.0][location.1] == needle[index + 1]
+            haystack[location.0][location.1] == needle[index]
         }
     }.count
 }
