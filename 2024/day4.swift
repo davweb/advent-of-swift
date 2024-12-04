@@ -36,10 +36,12 @@ func search(haystack: [[Character]], needle: [Character], variations: (Int, Int)
         $0.allSatisfy { x, y in
             xRange.contains(x) && yRange.contains(y)
         }
-    }.filter {
-        $0.enumerated().allSatisfy { index, location in
-            haystack[location.0][location.1] == needle[index]
+    }.map {
+        $0.map { x, y in
+            haystack[x][y]
         }
+    }.filter {
+        $0 == needle
     }.count
 }
 
