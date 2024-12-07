@@ -97,12 +97,12 @@ func part1() -> Int {
 
 func part2() -> Int {
     let input = readFile()
+    let path = walkMap(map: input.map, start: input.start)!
+    let originalLocations = Set(path.map(\.location))
 
-    return input.map.filter { _, filled in
-        !filled
-    }.filter { location, _ in
+    return originalLocations.filter {
         var map = input.map
-        map[location] = true
+        map[$0] = true
         return walkMap(map: map, start: input.start) == nil
     }.count
 }

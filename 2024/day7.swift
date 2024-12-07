@@ -33,14 +33,24 @@ func solve(_ equation: Equation) -> Bool {
     return solve(added) || (equation.solution % equation.numbers.last! == 0 && solve(multiplied))
 }
 
-func calculate(_ numbers: [Int], concatenate: Bool = false) -> [Int] {
+func concatenate(_ x: Int, _ y: Int) -> Int {
+    var a = 10
+
+    while a < y {
+        a *= 10
+    }
+
+    return x * a + y
+}
+
+func calculate(_ numbers: [Int]) -> [Int] {
     if numbers.count == 1 {
         return numbers
     }
 
     let added = [numbers[0] + numbers[1]] + numbers[2...]
     let multiplied = [numbers[0] * numbers[1]] + numbers[2...]
-    let concatenated = [Int("\(numbers[0] )\(numbers[1])")!] + numbers[2...]
+    let concatenated = [concatenate(numbers[0], numbers[1])] + numbers[2...]
 
     return calculate(added) + calculate(multiplied) + calculate(concatenated)
 }
