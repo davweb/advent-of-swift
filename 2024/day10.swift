@@ -18,7 +18,7 @@ func readFile() -> [Location: Int] {
     })
 }
 
-func neighbours(location: Location) -> [Location] {
+func neighbours(_ location: Location) -> [Location] {
     [
         Location(x: location.x - 1, y: location.y),
         Location(x: location.x + 1, y: location.y),
@@ -27,20 +27,20 @@ func neighbours(location: Location) -> [Location] {
     ]
 }
 
-func walkRoutes(grid: [Location: Int], location: Location, target: Int = 1) -> Int {
-    let next = neighbours(location: location).filter { grid[$0] == target }
+func walkRoutes(grid: [Location: Int], locations: [Location], target: Int = 0) -> Int {
+    let next = locations.filter { grid[$0] == target }
 
     if target == 9 {
         return next.count
     } else {
         return next.map {
-            walkRoutes(grid: grid, location: $0, target: target + 1)
+            walkRoutes(grid: grid, locations: neighbours($0), target: target + 1)
         }.reduce(0, +)
     }
 }
 
 func walkDestinations(grid: [Location: Int], location: Location, target: Int = 1) -> Set<Location> {
-    let next = neighbours(location: location).filter { grid[$0] == target }
+    let next = neighbours(location).filter { grid[$0] == target }
 
     if target == 9 {
         return Set(next)
@@ -64,11 +64,7 @@ func part1() -> Int {
 
 func part2() -> Int {
     let grid = readFile()
-    let start = grid.filter { $0.1 == 0 }.map(\.0)
-
-    return start.map {
-        walkRoutes(grid: grid, location: $0)
-    }.reduce(0, +)
+    return walkRoutes(grid: grid, locations: Array(grid.keys))
 }
 
 print(part1())
