@@ -17,7 +17,7 @@ func pow(_ x: Int) -> Int {
 }
 
 func part1() -> [Int] {
-    var a = 56256477
+    var a = registerA
     var output = [Int]()
 
     while a != 0 {

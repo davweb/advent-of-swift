@@ -1,6 +1,6 @@
 import Foundation
 
-let filename = "input/day16-sample.txt"
+let filename = "input/day16.txt"
 
 struct Location: Hashable {
     let x: Int
