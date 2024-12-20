@@ -68,12 +68,12 @@ func shortestPath(grid: Set<Location>, start: Location, end _: Location) -> [Loc
     return distances
 }
 
-func solve(_ cheats: (Location) -> [(Location, Int)]) -> Int {
+func solve(_ cheats: (Location) -> [(end: Location, length: Int)]) -> Int {
     let input = readFile()
     let distances = shortestPath(grid: input.grid, start: input.start, end: input.end)
 
     return distances.keys.flatMap { start in
-        cheats(start).filter { distances[$0.0] != nil }.map { distances[$0.0]! - distances[start]! - $0.1 }
+        cheats(start).filter { distances[$0.end] != nil }.map { distances[$0.end]! - distances[start]! - $0.length }
     }.filter {
         $0 >= 100
     }.count
@@ -81,10 +81,10 @@ func solve(_ cheats: (Location) -> [(Location, Int)]) -> Int {
 
 func part1() -> Int {
     solve { start in [
-        (Location(start.x, start.y - 2), 2),
-        (Location(start.x, start.y + 2), 2),
-        (Location(start.x - 2, start.y), 2),
-        (Location(start.x + 2, start.y), 2),
+        (end: Location(start.x, start.y - 2), length: 2),
+        (end: Location(start.x, start.y + 2), length: 2),
+        (end: Location(start.x - 2, start.y), length: 2),
+        (end: Location(start.x + 2, start.y), length: 2),
     ] }
 }
 
@@ -92,10 +92,10 @@ func part2() -> Int {
     solve { start in
         (-20 ... 20).flatMap { x in
             (-20 ... 20).map { y in
-                (Location(start.x + x, start.y + y), abs(x) + abs(y))
+                (end: Location(start.x + x, start.y + y), length: abs(x) + abs(y))
             }
         }.filter {
-            $0.1 >= 2 && $0.1 <= 20
+            2 ... 20 ~= $0.length
         }
     }
 }
