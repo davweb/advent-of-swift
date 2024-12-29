@@ -73,7 +73,7 @@ let directionPattern = Regex {
 }
 
 func readFile() -> (grid: [[Tile]], directions: [Direction]) {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     let grid = contents.matches(of: gridPattern).map(\.1)
     let directions = contents.matches(of: directionPattern).map(\.1)
     return (grid: grid, directions: directions)
@@ -93,38 +93,38 @@ func move(grid: inout [[Tile]], location: Location, direction: Direction, trialR
     let nextTile = grid[next.y][next.x]
 
     switch nextTile {
-    case .wall:
-        return nil
-    case .box:
-        if move(grid: &grid, location: next, direction: direction) == nil {
+        case .wall:
             return nil
-        }
-    case .boxLeft, .boxRight:
-        if direction == .left || direction == .right {
+        case .box:
             if move(grid: &grid, location: next, direction: direction) == nil {
                 return nil
             }
-        } else {
-            let (leftTile, rightTile) = switch nextTile {
-                case .boxLeft: (Location(next.x, next.y), Location(next.x + 1, next.y))
-                case .boxRight: (Location(next.x - 1, next.y), Location(next.x, next.y))
-                default: fatalError()
-            }
+        case .boxLeft, .boxRight:
+            if direction == .left || direction == .right {
+                if move(grid: &grid, location: next, direction: direction) == nil {
+                    return nil
+                }
+            } else {
+                let (leftTile, rightTile) = switch nextTile {
+                    case .boxLeft: (Location(next.x, next.y), Location(next.x + 1, next.y))
+                    case .boxRight: (Location(next.x - 1, next.y), Location(next.x, next.y))
+                    default: fatalError()
+                }
 
-            let canMoveBox = move(grid: &grid, location: leftTile, direction: direction, trialRun: true) != nil &&
-                move(grid: &grid, location: rightTile, direction: direction, trialRun: true) != nil
+                let canMoveBox = move(grid: &grid, location: leftTile, direction: direction, trialRun: true) != nil &&
+                    move(grid: &grid, location: rightTile, direction: direction, trialRun: true) != nil
 
-            if !canMoveBox {
-                return nil
-            }
+                if !canMoveBox {
+                    return nil
+                }
 
-            if !trialRun {
-                move(grid: &grid, location: leftTile, direction: direction)
-                move(grid: &grid, location: rightTile, direction: direction)
+                if !trialRun {
+                    move(grid: &grid, location: leftTile, direction: direction)
+                    move(grid: &grid, location: rightTile, direction: direction)
+                }
             }
-        }
-    default:
-        break
+        default:
+            break
     }
 
     if !trialRun {

@@ -2,16 +2,34 @@ import Foundation
 
 let filename = "input/day6.txt"
 
-struct Location: Hashable {
-    let x: Int
-    let y: Int
-}
-
 enum Direction {
     case north
     case east
     case south
     case west
+}
+
+struct Location: Hashable {
+    let x: Int
+    let y: Int
+
+    init(_ x: Int, _ y: Int) {
+        self.x = x
+        self.y = y
+    }
+
+    func next(_ direction: Direction) -> Location {
+        switch direction {
+        case .north:
+            Location(x, y - 1)
+        case .east:
+            Location(x + 1, y)
+        case .south:
+            Location(x, y + 1)
+        case .west:
+            Location(x - 1, y)
+        }
+    }
 }
 
 struct Step: Hashable {
@@ -20,7 +38,7 @@ struct Step: Hashable {
 }
 
 func readFile() -> (map: [Location: Bool], start: Location) {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     let lines = contents.split(separator: "\n")
 
     var map = [Location: Bool]()
@@ -28,7 +46,7 @@ func readFile() -> (map: [Location: Bool], start: Location) {
 
     for (y, line) in lines.enumerated() {
         for (x, char) in line.enumerated() {
-            let location = Location(x: x, y: y)
+            let location = Location(x, y)
 
             switch char {
                 case "^":
@@ -58,29 +76,19 @@ func walkMap(map: [Location: Bool], start: Location) -> Set<Step>? {
         }
 
         path.insert(step)
-
-        let next = switch direction {
-            case .north:
-                Location(x: location.x, y: location.y - 1)
-            case .east:
-                Location(x: location.x + 1, y: location.y)
-            case .south:
-                Location(x: location.x, y: location.y + 1)
-            case .west:
-                Location(x: location.x - 1, y: location.y)
-        }
+        let next = location.next(direction)
 
         if map[next] == true {
             direction = switch direction {
-                case .north:
-                    .east
-                case .east:
-                    .south
-                case .south:
-                    .west
-                case .west:
-                    .north
-                }
+            case .north:
+                .east
+            case .east:
+                .south
+            case .south:
+                .west
+            case .west:
+                .north
+            }
         } else {
             location = next
         }

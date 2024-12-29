@@ -43,7 +43,7 @@ struct ClawGame {
 }
 
 func readFile() -> [ClawGame] {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     return contents.matches(of: clawPattern).map {
         ClawGame(
             buttonA: Location($0.1, $0.2),

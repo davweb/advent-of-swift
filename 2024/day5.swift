@@ -39,7 +39,7 @@ struct Rule {
 }
 
 func readFile() -> (rules: [Rule], lists: [[Int]]) {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     let rules = contents.matches(of: rulePattern).map { Rule(before: $0.1, after: $0.2) }
     let lists = contents.matches(of: listPattern).map(\.1)
     return (rules: rules, lists: lists)

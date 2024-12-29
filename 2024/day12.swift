@@ -5,41 +5,47 @@ let filename = "input/day12.txt"
 struct Location: Hashable {
     let x: Int
     let y: Int
+
+    init(_ x: Int, _ y: Int) {
+        self.x = x
+        self.y = y
+    }
+
+    func edgeNeighbours() -> Set<Location> {
+        Set([
+            Location(self.x - 1, self.y),
+            Location(self.x + 1, self.y),
+            Location(self.x, self.y - 1),
+            Location(self.x, self.y + 1),
+        ])
+    }
+
+    func cornerNeighbours() -> [Location] {
+        (-1 ... 1).flatMap { dx in
+            (-1 ... 1).filter { $0 != 0 || dx != 0 }.map { dy in
+                Location(self.x + dx, self.y + dy)
+            }
+        }
+    }
 }
 
 func readFile() -> [Location: Character] {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     let lines = contents.split(separator: "\n")
 
     return Dictionary(uniqueKeysWithValues: lines.enumerated().flatMap { y, line in
         line.enumerated().map { x, char in
-            (Location(x: x, y: y), char)
+            (Location(x, y), char)
         }
     })
 }
 
-func edgeNeighbours(_ location: Location) -> Set<Location> {
-    Set([
-        Location(x: location.x - 1, y: location.y),
-        Location(x: location.x + 1, y: location.y),
-        Location(x: location.x, y: location.y - 1),
-        Location(x: location.x, y: location.y + 1),
-    ])
-}
-
-func cornerNeighbours(_ loc: Location) -> [Location] {
-    (-1 ... 1).flatMap { dx in
-        (-1 ... 1).filter { $0 != 0 || dx != 0 }.map { dy in
-            Location(x: loc.x + dx, y: loc.y + dy)
-        }
-    }
-}
 
 func triple(_ locations: Set<Location>) -> [Location] {
     return locations.flatMap { location in
         (location.x * 3 ... location.x * 3 + 2).flatMap { x in
             (location.y * 3 ... location.y * 3 + 2).map { y in
-                Location(x: x, y: y)
+                Location(x, y)
             }
         }
     }
@@ -66,7 +72,7 @@ func findAreas(grid: [Location: Character]) -> [Set<Location>] {
 
             seen.insert(current)
             area.insert(current)
-            queue.append(contentsOf: edgeNeighbours(current).filter { grid[$0] == plant })
+            queue.append(contentsOf: current.edgeNeighbours().filter { grid[$0] == plant })
         }
 
         areas.append(area)
@@ -76,18 +82,18 @@ func findAreas(grid: [Location: Character]) -> [Set<Location>] {
 }
 
 func calculatePerimeter(_ area: Set<Location>) -> Int {
-    return area.flatMap(edgeNeighbours).filter { !area.contains($0) }.count
+    return area.flatMap { $0.edgeNeighbours() }.filter { !area.contains($0) }.count
 }
 
 func countSides(_ sourceArea: Set<Location>) -> Int {
     //Tripling the area avoids some edge cases
     let area = triple(sourceArea)
-    let perimeter = Set(area.flatMap(cornerNeighbours).filter { !area.contains($0) })
+    let perimeter = Set(area.flatMap { $0.cornerNeighbours() }.filter { !area.contains($0) })
 
     //Number of corners is the same as the number sides
     return perimeter.filter { location in
-        let above = Location(x: location.x, y: location.y - 1)
-        let below = Location(x: location.x, y: location.y + 1)
+        let above = Location(location.x, location.y - 1)
+        let below = Location(location.x, location.y + 1)
         return perimeter.contains(above) != perimeter.contains(below)
     }.count
 }

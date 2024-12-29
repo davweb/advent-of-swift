@@ -42,7 +42,7 @@ struct Robot {
 }
 
 func readFile() -> [Robot] {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     return contents.matches(of: robotPattern).map {
         Robot(
             position: Location($0.1, $0.2),
@@ -165,7 +165,7 @@ func part2() -> Int {
         }
     }
 
-    fatalError()
+    fatalError("Tree not found.")
 }
 
 print(part1())

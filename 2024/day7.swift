@@ -8,7 +8,7 @@ struct Equation {
 }
 
 func readFile() -> [Equation] {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     let lines = contents.split(separator: "\n")
 
     return lines.map {
@@ -56,11 +56,11 @@ func calculate(_ numbers: [Int]) -> [Int] {
 }
 
 func part1() -> Int {
-    return readFile().filter(solve).map(\.solution).reduce(0, +)
+    readFile().filter(solve).map(\.solution).reduce(0, +)
 }
 
 func part2() -> Int {
-   return readFile().filter { calculate($0.numbers).contains($0.solution) }.map(\.solution).reduce(0, +)
+    readFile().filter { calculate($0.numbers).contains($0.solution) }.map(\.solution).reduce(0, +)
 }
 
 print(part1())

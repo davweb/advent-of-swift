@@ -3,7 +3,7 @@ import Foundation
 let filename = "input/day4.txt"
 
 func readFile() -> [[Character]] {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     return contents.split(separator: "\n").map { Array($0) }
 }
 

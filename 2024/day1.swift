@@ -2,21 +2,13 @@ import Foundation
 
 let filename = "input/day1.txt"
 
-struct Locations {
-    var a: [Int] = []
-    var b: [Int] = []
-}
+func readFile() -> (a: [Int], b: [Int]) {
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
 
-func readFile() -> Locations {
-    let contents = try! String(contentsOfFile: filename)
-    var locations = Locations()
-
-    contents.split(separator: "\n").map { $0.split(separator: " ") }.forEach {
-        locations.a.append(Int($0[0])!)
-        locations.b.append(Int($0[1])!)
+    return contents.split(separator: "\n").map { $0.split(separator: " ") }.reduce(into: (a: [Int](), b: [Int]())) {
+        $0.a.append(Int($1[0])!)
+        $0.b.append(Int($1[1])!)
     }
-
-    return locations
 }
 
 func part1() -> Int {

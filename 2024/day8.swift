@@ -5,6 +5,11 @@ let filename = "input/day8.txt"
 struct Location: Hashable {
     let x: Int
     let y: Int
+
+    init(_ x: Int, _ y: Int) {
+        self.x = x
+        self.y = y
+    }
 }
 
 struct Antenna {
@@ -13,12 +18,12 @@ struct Antenna {
 }
 
 func readFile() -> (antennas: [Antenna], xRange: Range<Int>, yRange: Range<Int>) {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     let lines = contents.split(separator: "\n")
 
     let antennas = lines.enumerated().flatMap { y, line in
         line.enumerated().map { x, char in
-            Antenna(location: Location(x: x, y: y), frequency: char)
+            Antenna(location: Location(x, y), frequency: char)
         }
     }.filter {
         $0.frequency != "."
@@ -52,7 +57,7 @@ func part1() -> Int {
     let input = readFile()
 
     let antiNodes = locationPairs(input.antennas).map { a, b in
-        Location(x: 2 * b.x - a.x, y: 2 * b.y - a.y)
+        Location(2 * b.x - a.x, 2 * b.y - a.y)
     }.filter {
         input.xRange.contains($0.x) && input.yRange.contains($0.y)
     }
@@ -71,7 +76,7 @@ func part2() -> Int {
         var y = b.y
 
         while input.xRange.contains(x), input.yRange.contains(y) {
-            locations.append(Location(x: x, y: y))
+            locations.append(Location(x, y))
             x += dx
             y += dy
         }

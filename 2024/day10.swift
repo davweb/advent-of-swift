@@ -5,26 +5,31 @@ let filename = "input/day10.txt"
 struct Location: Hashable {
     let x: Int
     let y: Int
+
+    init(_ x: Int, _ y: Int) {
+        self.x = x
+        self.y = y
+    }
+
+    func neighbours() -> [Location] {
+        [
+            Location(x - 1, y),
+            Location(x + 1, y),
+            Location(x, y - 1),
+            Location(x, y + 1),
+        ]
+    }
 }
 
 func readFile() -> [Location: Int] {
-    let contents = try! String(contentsOfFile: filename)
+    let contents = try! String(contentsOfFile: filename, encoding: .utf8)
     let lines = contents.split(separator: "\n")
 
     return Dictionary(uniqueKeysWithValues: lines.enumerated().flatMap { y, line in
         line.enumerated().map { x, char in
-            (Location(x: x, y: y), Int(String(char))!)
+            (Location(x, y), Int(String(char))!)
         }
     })
-}
-
-func neighbours(_ location: Location) -> [Location] {
-    [
-        Location(x: location.x - 1, y: location.y),
-        Location(x: location.x + 1, y: location.y),
-        Location(x: location.x, y: location.y - 1),
-        Location(x: location.x, y: location.y + 1),
-    ]
 }
 
 func walkRoutes(grid: [Location: Int], locations: [Location], target: Int = 0) -> Int {
@@ -34,13 +39,13 @@ func walkRoutes(grid: [Location: Int], locations: [Location], target: Int = 0) -
         return next.count
     } else {
         return next.map {
-            walkRoutes(grid: grid, locations: neighbours($0), target: target + 1)
+            walkRoutes(grid: grid, locations: $0.neighbours(), target: target + 1)
         }.reduce(0, +)
     }
 }
 
 func walkDestinations(grid: [Location: Int], location: Location, target: Int = 1) -> Set<Location> {
-    let next = neighbours(location).filter { grid[$0] == target }
+    let next = location.neighbours().filter { grid[$0] == target }
 
     if target == 9 {
         return Set(next)
